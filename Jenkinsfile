@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").inside {
-                        sh 'pip install -r requirements.txt'
+                        sh 'sudo pip install -r requirements.txt'
                         sh 'python manage.py test'
                     }
                 }

@@ -16,7 +16,7 @@ pipeline {
 
         stage("Checkout from SCM") {
             steps {
-                git branch: 'staging', credentialsId: 'github', url: 'https://github.com/Ashfaque-9x/register-app'  // Update repo URL if necessary
+                git branch: 'staging', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'  // Update repo URL if necessary
             }
         }
 

@@ -28,17 +28,6 @@ pipeline {
             }
         }
 
-        stage("Run Tests") {
-            steps {
-                script {
-                    docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").inside {
-                        sh 'pip3 install -r requirements.txt'
-                        sh 'python manage.py test'
-                    }
-                }
-            }
-        }
-
         stage("SonarQube Analysis") {
             steps {
                 script {

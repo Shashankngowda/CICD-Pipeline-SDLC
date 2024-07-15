@@ -1,8 +1,5 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
-    tools {
-        jdk 'Java17'  // If Java is not needed, you can remove this
-    }
     
     environment {
         DOCKER_IMAGE = "shashank/django-app"  // Replace with your Docker image name

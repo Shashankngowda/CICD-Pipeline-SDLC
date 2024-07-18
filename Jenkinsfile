@@ -84,14 +84,14 @@ pipeline {
            }
        }
 
-        stage("Cleanup Docker Images") {
-            steps {
-                script {
-                    sh "docker rmi ${DOCKER_IMAGE}:${IMAGE_TAG}"
-                    sh "docker rmi ${DOCKER_IMAGE}:latest"
-                }
-            }
-        }
+        stage ('Cleanup Artifacts') {
+           steps {
+               script {
+                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker rmi ${IMAGE_NAME}:latest"
+               }
+          }
+       }
 
         stage("Trigger CD Pipeline") {
             steps {

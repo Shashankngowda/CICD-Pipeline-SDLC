@@ -1,13 +1,12 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
     
-    environment {
+     environment {
         APP_NAME = "shashank/django-app"
         RELEASE = "1.0.0"
         DOCKER_USER = "shashank348"
-        DOCKER_PASS = 'dockerhub'
-        IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
-        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}
+        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
         DOCKER_REGISTRY_CREDENTIALS = credentials('jenkins-docker-token')
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }

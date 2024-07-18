@@ -7,11 +7,7 @@ pipeline {
         DOCKER_USER = "shashank348"
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-<<<<<<< HEAD
-        DOCKER_XYZ = 'dockerhub'
-=======
-        DOCKER_REGISTRY_CREDENTIALS = 'dockerhub'
->>>>>>> 1bde9874f8bb7e96f86dca71b132669a404f0988
+        DOCKER_REGISTRY_CREDENTIALS = credentials('jenkins-docker-token')
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }
 
@@ -62,7 +58,7 @@ pipeline {
         stage("Build Docker Image") {
             steps {
                 script {
-                    docker.withRegistry('',DOCKER_XYZ) {
+                    docker.withRegistry('',DOCKER_REGISTRY_CREDENTIALS) {
                         docker_image = docker.build "${IMAGE_NAME}"
                     }
                 }
@@ -72,7 +68,7 @@ pipeline {
         stage("Push Docker Image") {
             steps {
                 script {
-                    docker.withRegistry('',DOCKER_XYZ) {
+                    docker.withRegistry('',DOCKER_REGISTRY_CREDENTIALS) {
                         docker_image.push("${IMAGE_TAG}")
                         docker_image.push('latest')
                     }

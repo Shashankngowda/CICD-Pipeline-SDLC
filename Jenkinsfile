@@ -1,14 +1,12 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
-    tools {
-        jdk 'Java17'  // Ensure this matches the name in Global Tool Configuration
-        maven 'Maven3'
-    }
     
     environment {
         DOCKER_IMAGE = "shashank/django-app"
         IMAGE_TAG = "latest"
         DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
+        SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Your SonarQube server URL
+        SONARQUBE_TOKEN = credentials('sonarqube-token')
     }
 
     stages {
@@ -35,9 +33,14 @@ pipeline {
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    withSonarQubeEnv('sonarqube-server') {
-                        sh "/opt/jdk1.8.0_411/bin/java -version"
-                        sh "mvn clean verify sonar:sonar"
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                        sonar-scanner \
+                            -Dsonar.projectKey=django-project-key \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=${SONARQUBE_SERVER} \
+                            -Dsonar.login=${SONARQUBE_TOKEN}
+                        """
                     }
                 }
             }

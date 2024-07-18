@@ -31,25 +31,28 @@ pipeline {
         }
 
         stage('SonarQube Code Analysis') {
-            steps {
-                dir("${WORKSPACE}"){
-                // Run SonarQube analysis for Python
-                script {
-                    def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    withSonarQubeEnv('sonarqube-server') {
-                        sh "${scannerHome}/bin/sonar-scanner \
-                            -D sonar.projectVersion=1.0-SNAPSHOT \
-                            -D sonar.qualityProfile=Python-Quality-Profile \
-                            -D sonar.projectBaseDir=/var/lib/jenkins/workspace/Snyk-Testing/snyk-code-container-scan/appcode \
-                            -D sonar.projectKey=sample-app \
-                            -D sonar.sourceEncoding=UTF-8 \
-                            -D sonar.language=python \
-                            -D sonar.host.url=http://13.232.52.157:9000"
-                    }
+    steps {
+        dir("${WORKSPACE}") {
+            script {
+                def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                withSonarQubeEnv('sonarqube-server') {
+                    sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                        -D sonar.projectVersion=1.0-SNAPSHOT \
+                        -D sonar.qualityProfile=Python-Quality-Profile \
+                        -D sonar.projectBaseDir=${WORKSPACE} \
+                        -D sonar.projectKey=sample-app \
+                        -D sonar.sourceEncoding=UTF-8 \
+                        -D sonar.language=python \
+                        -D sonar.host.url=http://13.232.52.157:9000 \
+                        -D sonar.login=${env.SONARQUBE_TOKEN}
+                    """
                 }
             }
-            }
-       }
+        }
+    }
+}
+
 
         stage("Quality Gate") {
             steps {

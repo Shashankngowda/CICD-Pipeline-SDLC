@@ -8,7 +8,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "shashank/django-app"  // Replace with your Docker image name
         IMAGE_TAG = "latest"
-        DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'  // Jenkins credentials ID for Docker registry
+        DOCKER_REGISTRY_CREDENTIALS = 'docker'  // Jenkins credentials ID for Docker registry
     }
 
     stages {
@@ -19,6 +19,7 @@ pipeline {
         }
 
         stage("Checkout from SCM") {
+
             steps {
                 git branch: 'staging', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'  // Update repo URL if necessary
             }
@@ -32,20 +33,22 @@ pipeline {
             }
         }
 
-       stage("SonarQube Analysis"){
-           steps {
-	           script {
-		        withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
-                        sh "mvn sonar:sonar"
-		        }
-	           }	
-           }
-       }
+        stage("SonarQube Analysis") {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' is the correct server name
+                        sh "mvn clean verify sonar:sonar"
+                    }
+                }
+            }
+        }
 
         stage("Quality Gate") {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: true
+                    timeout(time: 1, unit: 'HOURS') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }

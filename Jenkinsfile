@@ -3,8 +3,11 @@ pipeline {
     
     environment {
         APP_NAME = "shashank/django-app"
+        RELEASE = "1.0.0"
+        DOCKER_USER = "ashfaque9x"
+        DOCKER_PASS = 'dockerhub'
         IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
-        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}
         DOCKER_REGISTRY_CREDENTIALS = credentials('jenkins-docker-token')
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }

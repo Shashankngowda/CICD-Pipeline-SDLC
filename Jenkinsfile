@@ -7,7 +7,7 @@ pipeline {
         DOCKER_USER = "shashank348"
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-        DOCKER_REGISTRY_CREDENTIALS = "dckr_pat_8jth5s68_WegAMFxiLCI1u-bzc0"
+        DOCKER_REGISTRY_CREDENTIALS = 'dockerhub'
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }
 
@@ -64,7 +64,7 @@ pipeline {
                 }
                 }
         }
-
+        
         stage("Push Docker Image") {
             steps {
                 script {

@@ -36,6 +36,7 @@ pipeline {
             steps {
                 script {
                     withSonarQubeEnv('sonarqube-server') {
+                        sh "/opt/jdk1.8.0_221/bin/java -version"
                         sh "mvn clean verify sonar:sonar"
                     }
                 }

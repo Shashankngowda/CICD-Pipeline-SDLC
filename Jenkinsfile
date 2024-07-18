@@ -1,16 +1,14 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
-    tools {
-        jdk 'Java17'  // Ensure this matches the name in Global Tool Configuration
-        maven 'Maven3'
-    }
     
     environment {
         DOCKER_IMAGE = "shashank/django-app"
         IMAGE_TAG = "latest"
         DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
+        SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Update with your SonarQube server URL
+        SONARQUBE_TOKEN = credentials('sonarqube-token')   // Update with your SonarQube server URL
     }
-
+    
     stages {
         stage("Cleanup Workspace") {
             steps {
@@ -20,7 +18,7 @@ pipeline {
 
         stage("Checkout from SCM") {
             steps {
-                git branch: 'staging', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'
             }
         }
 
@@ -32,12 +30,25 @@ pipeline {
             }
         }
 
+        stage("Static Code Analysis") {
+            steps {
+                // Assuming you have Flake8 or other static analysis tools for Python installed
+                sh "flake8 ."  // Example command for static code analysis
+            }
+        }
+
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    withSonarQubeEnv('sonarqube-server') {
-                        sh "/opt/jdk1.8.0_411/bin/java -version"
-                        sh "mvn sonar:sonar"
+                    withSonarQubeEnv('SonarQube') {
+                        // Execute SonarScanner for Python
+                        sh """
+                        sonar-scanner \
+                            -Dsonar.projectKey=django-project-key \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=${SONARQUBE_SERVER} \
+                            -Dsonar.login=${env.SONARQUBE_TOKEN}
+                        """
                     }
                 }
             }

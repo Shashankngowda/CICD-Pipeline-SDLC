@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = "shashank/django-app"
-        IMAGE_TAG = "latest"
+        IMAGE_TAG = "latest12"
         DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
         SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Your SonarQube server URL
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')  // Your SonarQube token ID in Jenkins

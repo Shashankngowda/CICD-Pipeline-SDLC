@@ -36,7 +36,7 @@ pipeline {
                     withSonarQubeEnv('SonarQube') {
                         sh """
                         sonar-scanner \
-                            -Dsonar.projectKey=django-project-key \
+                            -Dsonar.projectKey=test \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=${SONARQUBE_SERVER} \
                             -Dsonar.login=${SONARQUBE_TOKEN}

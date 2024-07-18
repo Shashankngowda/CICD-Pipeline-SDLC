@@ -66,14 +66,14 @@ pipeline {
         stage("Push Docker Image") {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/',DOCKER_REGISTRY_CREDENTIALS) {
+                    docker.withRegistry('https://registry-1.docker.io/v1/', 'jenkins-docker-token') {
                         docker_image.push("${IMAGE_TAG}")
                         docker_image.push('latest')
                     }
                 }
             }
+        }
 
-       }
 
 
         stage("Trivy Scan") {

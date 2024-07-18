@@ -6,7 +6,7 @@ pipeline {
         IMAGE_TAG = "latest"
         DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
         SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Your SonarQube server URL
-        SONARQUBE_TOKEN = credentials('sonarqube-token')
+        SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }
 
     stages {

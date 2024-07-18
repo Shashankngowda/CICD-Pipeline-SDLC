@@ -5,8 +5,8 @@ pipeline {
         DOCKER_IMAGE = "shashank/django-app"
         IMAGE_TAG = "latest"
         DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
-        SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Update with your SonarQube server URL
-        SONARQUBE_TOKEN = credentials('sonarqube-token')   // Update with your SonarQube server URL
+        SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Your SonarQube server URL
+        SONARQUBE_TOKEN = credentials('sonarqube-token')  // Your SonarQube token ID in Jenkins
     }
     
     stages {
@@ -47,7 +47,7 @@ pipeline {
                             -Dsonar.projectKey=django-project-key \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=${SONARQUBE_SERVER} \
-                            -Dsonar.login=${env.SONARQUBE_TOKEN}
+                            -Dsonar.login=${SONARQUBE_TOKEN}
                         """
                     }
                 }
@@ -95,7 +95,7 @@ pipeline {
         stage("Trigger CD Pipeline") {
             steps {
                 script {
-                    sh "curl -v -k --user clouduser:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-232-128-192.ap-south-1.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters?token=gitops-token'"
+                    sh "curl -v -k --user clouduser:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'http://ec2-13-232-128-192.ap-south-1.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters?token=gitops-token'"
                 }
             }
         }

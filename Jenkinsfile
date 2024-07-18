@@ -58,9 +58,7 @@ pipeline {
         stage("Build Docker Image") {
             steps {
                 script {
-                    docker.withRegistry('',DOCKER_REGISTRY_CREDENTIALS) {
                         docker_image = docker.build "${IMAGE_NAME}"
-                    }
                 }
                 }
         }

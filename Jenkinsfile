@@ -2,10 +2,10 @@ pipeline {
     agent { label 'Jenkins-Agent' }
     
     environment {
-        DOCKER_IMAGE = "shashank/django-app"
-        IMAGE_TAG = "latest"
-        DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
-        SONARQUBE_SERVER = ''  // Your SonarQube server URL
+        APP_NAME = "shashank/django-app"
+        IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+        DOCKER_REGISTRY_CREDENTIALS = credentials('jenkins-docker-token')
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }
 
@@ -22,13 +22,6 @@ pipeline {
             }
         }
 
-        stage("Build Docker Image") {
-            steps {
-                script {
-                    docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}")
-                }
-            }
-        }
 
         stage('SonarQube Code Analysis') {
             steps {
@@ -60,12 +53,20 @@ pipeline {
 
         }
 
+        stage("Build Docker Image") {
+            steps {
+                script {
+                    docker.build("${IMAGE_NAME}")
+                }
+            }
+        }
+
         stage("Push Docker Image") {
             steps {
                 script {
                     docker.withRegistry('', DOCKER_REGISTRY_CREDENTIALS) {
-                        docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").push()
-                        docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").push('latest')
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
                     }
                 }
             }

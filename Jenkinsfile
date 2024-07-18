@@ -33,13 +33,13 @@ pipeline {
             }
         }
 
-        stage("SonarQube Analysis") {
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' is the correct server name
-                        sh "mvn clean verify sonar:sonar"
+        stage("SonarQube Analysis"){
+           steps {
+	           script {
+		        withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
+                        sh "mvn sonar:sonar"
                     }
-                }
+                }	
             }
         }
 

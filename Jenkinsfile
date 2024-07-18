@@ -1,14 +1,16 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
+    tools {
+        jdk 'Java17'  // Ensure this matches the name in Global Tool Configuration
+        maven 'Maven3'
+    }
     
     environment {
         DOCKER_IMAGE = "shashank/django-app"
-        IMAGE_TAG = "latest12"
+        IMAGE_TAG = "latest"
         DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
-        SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Your SonarQube server URL
-        SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')  // Your SonarQube token ID in Jenkins
     }
-    
+
     stages {
         stage("Cleanup Workspace") {
             steps {
@@ -18,37 +20,24 @@ pipeline {
 
         stage("Checkout from SCM") {
             steps {
-                git branch: 'main', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'
+                git branch: 'staging', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'
             }
         }
 
         stage("Build Docker Image") {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}",".")
+                    docker.build("${DOCKER_IMAGE}:${IMAGE_TAG}")
                 }
-            }
-        }
-
-        stage("Static Code Analysis") {
-            steps {
-                // Assuming you have Flake8 or other static analysis tools for Python installed
-                sh "flake8 ."  // Example command for static code analysis
             }
         }
 
         stage("SonarQube Analysis") {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQube') {
-                        // Execute SonarScanner for Python
-                        sh """
-                        sonar-scanner \
-                            -Dsonar.projectKey=django-project-key \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=${SONARQUBE_SERVER} \
-                            -Dsonar.login=${SONARQUBE_TOKEN}
-                        """
+                    withSonarQubeEnv('sonarqube-server') {
+                        sh "/opt/jdk1.8.0_411/bin/java -version"
+                        sh "mvn clean verify sonar:sonar"
                     }
                 }
             }
@@ -95,7 +84,7 @@ pipeline {
         stage("Trigger CD Pipeline") {
             steps {
                 script {
-                    sh "curl -v -k --user clouduser:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'http://ec2-13-232-128-192.ap-south-1.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters?token=gitops-token'"
+                    sh "curl -v -k --user clouduser:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-232-128-192.ap-south-1.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters?token=gitops-token'"
                 }
             }
         }

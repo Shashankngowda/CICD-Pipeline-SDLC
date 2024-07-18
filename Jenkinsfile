@@ -39,8 +39,8 @@ pipeline {
                     withSonarQubeEnv('sonarqube-server') {
                         sh "${scannerHome}/bin/sonar-scanner \
                             -D sonar.projectVersion=1.0-SNAPSHOT \
-                            -D sonar.qualityProfile=<qualityprofilename> \
-                            -D sonar.projectBaseDir=/var/lib/jenkins/workspace/Snyk-Testing/snyk-code-container-scan/appcode \
+                            -D sonar.qualityProfile=Python-Quality-Profile \
+                            -D sonar.projectBaseDir=${WORKSPACE} \
                             -D sonar.projectKey=sample-app \
                             -D sonar.sourceEncoding=UTF-8 \
                             -D sonar.language=python \

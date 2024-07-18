@@ -84,14 +84,20 @@ pipeline {
            }
        }
 
-        stage ('Cleanup Artifacts') {
-           steps {
-               script {
-                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker rmi ${IMAGE_NAME}:latest"
-               }
-          }
-       }
+        stage("Cleanup Docker Images") {
+            steps {
+                script {
+                    def dockerImage = "${DOCKER_USER}/${APP_NAME}:${RELEASE}-${BUILD_NUMBER}"
+                    def latestImage = "${DOCKER_USER}/${APP_NAME}:latest"
+
+                    // Attempt to remove the specific versioned Docker image
+                    sh "docker rmi ${dockerImage}"
+
+                    // Attempt to remove the 'latest' tagged Docker image
+                    sh "docker rmi ${latestImage}"
+                }
+            }
+        }
 
         stage("Trigger CD Pipeline") {
             steps {

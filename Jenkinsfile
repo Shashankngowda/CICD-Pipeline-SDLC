@@ -1,14 +1,14 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
     tools {
-        jdk 'Java17'
+        jdk 'Java17'  // Ensure this matches the name in Global Tool Configuration
         maven 'Maven3'
     }
     
     environment {
-        DOCKER_IMAGE = "shashank/django-app"  // Replace with your Docker image name
+        DOCKER_IMAGE = "shashank/django-app"
         IMAGE_TAG = "latest"
-        DOCKER_REGISTRY_CREDENTIALS = 'docker'  // Jenkins credentials ID for Docker registry
+        DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
     }
 
     stages {
@@ -19,9 +19,8 @@ pipeline {
         }
 
         stage("Checkout from SCM") {
-
             steps {
-                git branch: 'staging', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'  // Update repo URL if necessary
+                git branch: 'staging', credentialsId: 'github', url: 'https://github.com/Shashankngowda/CICD-Pipeline-SDLC.git'
             }
         }
 
@@ -33,13 +32,13 @@ pipeline {
             }
         }
 
-        stage("SonarQube Analysis"){
-           steps {
-	           script {
-		        withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
-                        sh "mvn sonar:sonar"
+        stage("SonarQube Analysis") {
+            steps {
+                script {
+                    withSonarQubeEnv('sonarqube-server') {
+                        sh "mvn clean verify sonar:sonar"
                     }
-                }	
+                }
             }
         }
 

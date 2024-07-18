@@ -1,5 +1,9 @@
 pipeline {
     agent { label 'Jenkins-Agent' }
+    tools {
+        jdk 'Java17'
+        maven 'Maven3'
+    }
     
     environment {
         DOCKER_IMAGE = "shashank/django-app"  // Replace with your Docker image name
@@ -28,22 +32,20 @@ pipeline {
             }
         }
 
-        stage("SonarQube Analysis") {
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQube') { // Ensure 'SonarQube' is the name of the SonarQube instance in Jenkins
-                        sh "mvn clean verify sonar:sonar"
-                    }
-                }
-            }
-        }
+       stage("SonarQube Analysis"){
+           steps {
+	           script {
+		        withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
+                        sh "mvn sonar:sonar"
+		        }
+	           }	
+           }
+       }
 
         stage("Quality Gate") {
             steps {
                 script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        waitForQualityGate abortPipeline: true
-                    }
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }

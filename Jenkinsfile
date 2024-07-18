@@ -2,7 +2,7 @@ pipeline {
     agent { label 'Jenkins-Agent' }
     
      environment {
-        APP_NAME = "shashank/django-app"
+        APP_NAME = "django-app"
         RELEASE = "1.0.0"
         DOCKER_USER = "shashank348"
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"

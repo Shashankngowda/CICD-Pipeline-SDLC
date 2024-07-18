@@ -7,7 +7,11 @@ pipeline {
         DOCKER_USER = "shashank348"
         IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+<<<<<<< HEAD
         DOCKER_XYZ = 'dockerhub'
+=======
+        DOCKER_REGISTRY_CREDENTIALS = 'dockerhub'
+>>>>>>> 1bde9874f8bb7e96f86dca71b132669a404f0988
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }
 

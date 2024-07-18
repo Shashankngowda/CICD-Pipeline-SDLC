@@ -28,17 +28,15 @@ pipeline {
             }
         }
 
-        stage("SonarQube Analysis") {
-            steps {
-                script {
-                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
-                        docker.image("${DOCKER_IMAGE}:${IMAGE_TAG}").inside {
-                            sh 'sonar-scanner'
-                        }
-                    }
-                }
-            }
-        }
+       stage("SonarQube Analysis"){
+           steps {
+	           script {
+		        withSonarQubeEnv(credentialsId: 'jenkins-sonarqube-token') { 
+                        sh "mvn sonar:sonar"
+		        }
+	           }	
+           }
+       }
 
         stage("Quality Gate") {
             steps {

@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE = "shashank/django-app"
         IMAGE_TAG = "latest"
         DOCKER_REGISTRY_CREDENTIALS = 'docker-credentials'
-        SONARQUBE_SERVER = 'http://13.232.52.157:9000'  // Your SonarQube server URL
+        SONARQUBE_SERVER = ''  // Your SonarQube server URL
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
     }
 
@@ -30,21 +30,26 @@ pipeline {
             }
         }
 
-        stage("SonarQube Analysis") {
+        stage('SonarQube Code Analysis') {
             steps {
+                dir("${WORKSPACE}"){
+                // Run SonarQube analysis for Python
                 script {
-                    withSonarQubeEnv('SonarQube') {
-                        sh """
-                        sonar-scanner \
-                            -Dsonar.projectKey=test \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=${SONARQUBE_SERVER} \
-                            -Dsonar.login=${SONARQUBE_TOKEN}
-                        """
+                    def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    withSonarQubeEnv('sonarqube-server') {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -D sonar.projectVersion=1.0-SNAPSHOT \
+                            -D sonar.qualityProfile=<qualityprofilename> \
+                            -D sonar.projectBaseDir=/var/lib/jenkins/workspace/Snyk-Testing/snyk-code-container-scan/appcode \
+                            -D sonar.projectKey=sample-app \
+                            -D sonar.sourceEncoding=UTF-8 \
+                            -D sonar.language=python \
+                            -D sonar.host.url=http://13.232.52.157:9000"
                     }
                 }
             }
-        }
+            }
+       }
 
         stage("Quality Gate") {
             steps {

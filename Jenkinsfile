@@ -9,6 +9,10 @@ pipeline {
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
         DOCKER_REGISTRY_CREDENTIALS = credentials('jenkins-docker-token')
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_REGION = 'your-aws-region'  // e.g., 'us-west-2'
+        CLUSTER_NAME = 'your-eks-cluster-name'
     }
 
     stages {
@@ -95,15 +99,26 @@ pipeline {
             }
         }
 
-        stage("Trigger CD Pipeline") {
+        stage("Deploy to EKS") {
             steps {
                 script {
-                    sh "curl -v -k --user clouduser:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-232-128-192.ap-south-1.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters?token=gitops-token'"
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+                        credentialsId: 'aws-credentials'
+                    ]]) {
+                        sh """
+                        aws eks --region ${AWS_REGION} update-kubeconfig --name ${CLUSTER_NAME}
+                        kubectl apply -f ${WORKSPACE}/deployment.yaml
+                        kubectl apply -f ${WORKSPACE}/service.yaml
+                        """
+                    }
                 }
             }
         }
     }
-
+    
     post {
         failure {
             emailext body: '''${SCRIPT, template="groovy-html.template"}''', 

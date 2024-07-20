@@ -9,6 +9,9 @@ pipeline {
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
         DOCKER_REGISTRY_CREDENTIALS = credentials('jenkins-docker-token')
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
+        EC2_SSH_KEY = credentials('Kubernates-ec2-key')
+        EC2_USER = "ubuntu"
+        EC2_HOST = "172.31.34.177"
     }
 
     stages {
@@ -95,10 +98,20 @@ pipeline {
             }
         }
 
-        stage("Trigger CD Pipeline") {
+        stage("Deploy to EC2") {
             steps {
                 script {
-                    sh "curl -v -k --user clouduser:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-13-232-128-192.ap-south-1.compute.amazonaws.com:8080/job/gitops-register-app-cd/buildWithParameters?token=gitops-token'"
+                    sshagent(['jenkins-ec2-key']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << EOF
+                            echo ${DOCKER_REGISTRY_CREDENTIALS} | docker login -u ${DOCKER_USER} --password-stdin
+                            docker pull ${IMAGE_NAME}:latest
+                            docker stop my-app || true
+                            docker rm my-app || true
+                            docker run -d --name my-app -p 80:80 ${IMAGE_NAME}:latest
+                            EOF
+                        """
+                    }
                 }
             }
         }

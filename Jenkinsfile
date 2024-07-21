@@ -1,4 +1,5 @@
 pipeline {
+    // DeclarativeCheckoutSCM
     agent { label 'Jenkins-Agent' }
     
      environment {
@@ -99,7 +100,7 @@ pipeline {
         }
 
        
-        stage('Run Remote Script') {
+        stage('Application Deployment') {
             steps {
                 script {
                     sh """

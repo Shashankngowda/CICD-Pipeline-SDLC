@@ -13,7 +13,7 @@ RUN pip install -r requirements.txt
 # Copy the entire application code to the container
 COPY . /app/backend
 
-# Expose port 8000 to the outside world
+# Expose port 9000 to the outside world
 EXPOSE 9000
 
 # Apply migrations to set up the database (SQLite in this case)

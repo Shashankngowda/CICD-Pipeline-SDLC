@@ -101,7 +101,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    ssh user@remote-machine 'bash -s' < /home/ubuntu/cd.sh
+                    ssh -o StrictHostKeyChecking=no user@remote-machine 'bash -s' < /path/to/local/cd.sh
                     """
                 }
             }

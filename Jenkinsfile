@@ -103,7 +103,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    ssh -o StrictHostKeyChecking=no ubuntu@172.31.34.177 'bash /tmp/cd.sh'
+                    ssh -o StrictHostKeyChecking=no ubuntu@172.31.34.177 'bash /home/ubuntu/cd.sh'
                     """
                 }
             }

@@ -48,7 +48,7 @@ pipeline {
 
         stage("Quality Gate"){
             steps {
-                    timeout(time: 1, unit: 'HOURS') {
+                    timeout(time: 10, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
                     }
             }
@@ -100,7 +100,7 @@ pipeline {
         stage('Run Remote Script') {
             steps {
                 script {
-                    def exitCode = sh(script: "ssh -o StrictHostKeyChecking=no ubuntu@3.111.170.77 'bash -s' < /path/to/local/cd.sh", returnStatus: true)
+                    def exitCode = sh(script: "ssh -o StrictHostKeyChecking=no ubuntu@3.111.170.77 'bash -s' < /home/ubuntu/cd.sh", returnStatus: true)
                     if (exitCode != 0) {
                         error "Script failed with exit code ${exitCode}"
                     }

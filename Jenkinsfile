@@ -9,9 +9,6 @@ pipeline {
         IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
         DOCKER_REGISTRY_CREDENTIALS = credentials('jenkins-docker-token')
         SONARQUBE_TOKEN = credentials('jenkins-sonarqube-token')
-        EC2_SSH_KEY = credentials('Kubernates-ec2-key')
-        EC2_USER = "ubuntu"
-        EC2_HOST = "172.31.34.177"
     }
 
     stages {
@@ -98,23 +95,18 @@ pipeline {
             }
         }
 
-        stage("Deploy to EC2") {
+       
+        stage('Run Remote Script') {
             steps {
                 script {
-                    sshagent(['jenkins-ec2-key']) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << EOF
-                            echo ${DOCKER_REGISTRY_CREDENTIALS} | docker login -u ${DOCKER_USER} --password-stdin
-                            docker pull ${IMAGE_NAME}:latest
-                            docker stop my-app || true
-                            docker rm my-app || true
-                            docker run -d --name my-app -p 80:80 ${IMAGE_NAME}:latest
-                            EOF
-                        """
-                    }
+                    sh """
+                    ssh user@remote-machine 'bash -s' < /home/ubuntu/cd.sh
+                    """
                 }
             }
         }
+    }
+
     }
 
     post {

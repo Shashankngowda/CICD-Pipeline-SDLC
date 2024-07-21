@@ -17,6 +17,7 @@ COPY . /app/backend
 EXPOSE 8000
 
 # Apply migrations to set up the database (SQLite in this case)
+RUN python manage.py migrate
 
 # Run the Django application
-CMD python /app/backend/manage.py runserver 0.0.0.0:8000
+CMD python /app/backend/manage.py runserver 0.0.0.0:9000

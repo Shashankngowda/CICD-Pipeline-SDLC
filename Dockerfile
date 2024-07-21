@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 COPY . /app/backend
 
 # Expose port 8000 to the outside world
-EXPOSE 8000
+EXPOSE 9000
 
 # Apply migrations to set up the database (SQLite in this case)
 RUN python manage.py migrate

@@ -40,7 +40,7 @@ pipeline {
                             -D sonar.projectKey=sample-app \
                             -D sonar.sourceEncoding=UTF-8 \
                             -D sonar.language=python \
-                            -D sonar.host.url=http://13.233.159.58:9000"
+                            -D sonar.host.url=http://65.0.173.247:9000"
                     }
                 }
             }

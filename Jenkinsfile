@@ -27,30 +27,25 @@ pipeline {
 
 
         stage('SonarQube Code Analysis') {
-    steps {
-        dir("${WORKSPACE}") {
-            script {
-                def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                withSonarQubeEnv('sonarqube-server') {
-                    withCredentials([string(credentialsId: 'SONARQUBE_TOKEN', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            ${scannerHome}/bin/sonar-scanner \
+            steps {
+                dir("${WORKSPACE}"){
+                // Run SonarQube analysis for Python
+                script {
+                    def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    withSonarQubeEnv('sonarqube-server') {
+                        sh "${scannerHome}/bin/sonar-scanner \
                             -D sonar.projectVersion=1.0-SNAPSHOT \
                             -D sonar.qualityProfile=Python-Quality-Profile \
                             -D sonar.projectBaseDir=${WORKSPACE} \
                             -D sonar.projectKey=sample-app \
                             -D sonar.sourceEncoding=UTF-8 \
                             -D sonar.language=python \
-                            -D sonar.host.url=http://3.7.71.103:9000 \
-                            -D sonar.login=$SONAR_TOKEN
-                        '''
+                            -D sonar.host.url=http://3.7.71.103:9000"
                     }
                 }
             }
-        }
-    }
-}
-
+            }
+       }
 
         stage("Quality Gate"){
             steps {

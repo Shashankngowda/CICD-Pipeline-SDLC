@@ -33,7 +33,7 @@ pipeline {
             script {
                 def scannerHome = tool name: 'sonarqube-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                 withSonarQubeEnv('sonarqube-server') {
-                    withCredentials([string(credentialsId: 'sonarqube-token-id', variable: 'SONAR_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'jenkins-sonarqube-token', variable: 'SONAR_TOKEN')]) {
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
                             -D sonar.projectVersion=1.0-SNAPSHOT \
